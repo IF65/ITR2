@@ -1,5 +1,5 @@
 //
-//  periodoCell.swift
+//  giornoCell.swift
 //  ITR2
 //
 //  Created by if65 on 10/06/2018.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class periodoCell: UICollectionViewCell {
+class giornoCell: UICollectionViewCell {
     
     
     @IBOutlet weak var boxInterno: UIView!

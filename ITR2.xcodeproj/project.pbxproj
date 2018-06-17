@@ -14,7 +14,7 @@
 		C9385D6E20CD166300B3A18C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9385D6D20CD166300B3A18C /* Assets.xcassets */; };
 		C9385D7120CD166300B3A18C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9385D6F20CD166300B3A18C /* LaunchScreen.storyboard */; };
 		C9FCAD4320CD2D8C008883FF /* areaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4220CD2D8C008883FF /* areaCell.swift */; };
-		C9FCAD4620CD5185008883FF /* periodoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4520CD5185008883FF /* periodoCell.swift */; };
+		C9FCAD4620CD5185008883FF /* giornoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4520CD5185008883FF /* giornoCell.swift */; };
 		C9FCAD4920CD62FC008883FF /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4820CD62FC008883FF /* DataModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,7 +30,7 @@
 		C9385D7020CD166300B3A18C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9385D7220CD166300B3A18C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9FCAD4220CD2D8C008883FF /* areaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = areaCell.swift; sourceTree = "<group>"; };
-		C9FCAD4520CD5185008883FF /* periodoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = periodoCell.swift; sourceTree = "<group>"; };
+		C9FCAD4520CD5185008883FF /* giornoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = giornoCell.swift; sourceTree = "<group>"; };
 		C9FCAD4820CD62FC008883FF /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,7 +109,7 @@
 		C9FCAD4720CD518C008883FF /* Periodi */ = {
 			isa = PBXGroup;
 			children = (
-				C9FCAD4520CD5185008883FF /* periodoCell.swift */,
+				C9FCAD4520CD5185008883FF /* giornoCell.swift */,
 			);
 			path = Periodi;
 			sourceTree = "<group>";
@@ -231,7 +231,7 @@
 				C9FCAD4920CD62FC008883FF /* DataModel.swift in Sources */,
 				C9FCAD4320CD2D8C008883FF /* areaCell.swift in Sources */,
 				C9385D6920CD166300B3A18C /* IncassiViewController.swift in Sources */,
-				C9FCAD4620CD5185008883FF /* periodoCell.swift in Sources */,
+				C9FCAD4620CD5185008883FF /* giornoCell.swift in Sources */,
 				C9385D6720CD166300B3A18C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

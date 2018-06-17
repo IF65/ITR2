@@ -10,6 +10,7 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
+let societaSelezionata = "08"
 var elencoSocieta = [String : Societa]()
 var settimane = [Settimana]()
 
@@ -17,12 +18,12 @@ var settimane = [Settimana]()
  //MARK:- Costanti
 // ---------------------------------------------
 let itmServer = "10.11.14.78"
-let itmSocietaPath = "/itr/itr.php"
+let itmItrPath = "/itr/itr.php"
 
 let gmtTimeZone = TimeZone(abbreviation: "GMT")
 let offsetWeek = 0
 
- //MARK:- Config
+//MARK:- Config
 // ---------------------------------------------
 class Sede: Codable {
     var codice: String = ""
@@ -56,7 +57,7 @@ func updateConfigData() -> Bool {
     var urlComponents = URLComponents()
     urlComponents.scheme = "http"
     urlComponents.host = itmServer
-    urlComponents.path = itmSocietaPath
+    urlComponents.path = itmItrPath
     guard let url = urlComponents.url else { fatalError("Non può essere creata la url dai componenti!") }
     
     Alamofire.request(url, method: .post, parameters: ["functionName" : "elencoSocieta"], encoding: JSONEncoding.default)
@@ -160,7 +161,110 @@ func loadConfigFromDisc() -> [String : Societa]? {
     }
 }
 
+//MARK:- Incassi
+// ---------------------------------------------
+
+struct JSONIncasso: Decodable {
+    let clienti: String
+    let clientiAP: String
+    let clientiOb: String
+    let codice: String
+    let giornataClienti: String
+    let giornataPassaggi: String
+    let giornataVenduto: String
+    let giorniApertura: String
+    let giorniAperturaAP: String
+    let oraUltimoscontrino: String
+    let oreLavorate: String
+    let oreLavorateAP: String
+    let oreLavorateOb: String
+    let passaggi: String
+    let passaggiAP: String
+    let passaggiOb: String
+    let venduto: String
+    let vendutoAP: String
+    let vendutoOb: String
+}
+
+struct JSONIncassi: Decodable {
+    let draw: Int
+    let recordsFiltered: Int
+    let recordsTotal: Int
+    let data: [JSONIncasso]
+}
+struct JSONIncassiRequest: Encodable {
+    var dataCorrente: String
+    var dataCorrenteAP: String
+    var dataFine: String
+    var dataFineAP: String
+    var dataInizio: String
+    var dataInizioAP: String
+    var draw: Int
+    var functionName: String
+}
+
+class Incasso {
+    var clienti: Int = 0
+    var clientiAP: Int = 0
+    var clientiOb: Int = 0
+    var codice: String = ""
+    var giornataClienti: Int = 0
+    var giornataPassaggi: Int = 0
+    var giornataVenduto: Double = 0.0
+    var giorniApertura: Int = 0
+    var giorniAperturaAP: Int = 0
+    var oraUltimoscontrino: String = ""
+    var oreLavorate: Float = 0
+    var oreLavorateAP: Float = 0
+    var oreLavorateOb: Float = 0
+    var passaggi: Int = 0
+    var passaggiAP: Int = 0
+    var passaggiOb: Int = 0
+    var venduto: Double = 0.0
+    var vendutoAP: Double = 0.0
+    var vendutoOb: Double = 0.0
+    
+    init(jsonIncasso: JSONIncasso) {
+        self.clienti = Int(jsonIncasso.clienti)!
+        self.clientiAP = Int(jsonIncasso.clientiAP)!
+        self.clientiOb = Int(jsonIncasso.clientiOb)!
+        self.codice = jsonIncasso.codice
+        self.giornataClienti = Int(jsonIncasso.giornataClienti)!
+        self.giornataPassaggi = Int(jsonIncasso.giornataPassaggi)!
+        self.giornataVenduto = Double(jsonIncasso.giornataVenduto)!
+        self.giorniApertura = Int(jsonIncasso.giorniApertura)!
+        self.giorniAperturaAP = Int(jsonIncasso.giorniAperturaAP)!
+        self.oraUltimoscontrino = jsonIncasso.oraUltimoscontrino
+        self.oreLavorate = Float(jsonIncasso.oreLavorate)!
+        self.oreLavorateAP = Float(jsonIncasso.oreLavorateAP)!
+        self.oreLavorateOb = Float(jsonIncasso.oreLavorateOb)!
+        self.passaggi = Int(jsonIncasso.passaggi)!
+        self.passaggiAP = Int(jsonIncasso.passaggiAP)!
+        self.passaggiOb = Int(jsonIncasso.passaggiOb)!
+        self.venduto = Double(jsonIncasso.venduto)!
+        self.vendutoAP = Double(jsonIncasso.vendutoAP)!
+        self.vendutoOb = Double(jsonIncasso.vendutoOb)!
+    }
+}
+
+class Incassi {
+    var incassi = [Incasso]()
+    
+    init() {
+        self.incassi = []
+    }
+}
+
  //MARK:- Periodi
+// ---------------------------------------------
+enum TipoCalendario {
+    case giornaliero
+    case settimanale
+    case mensile
+    case annuale
+    case periodo
+}
+
 class Settimana {
     var numero: Int
     var anno: Int
@@ -238,6 +342,83 @@ class Periodo {
         for mese in 1...12 {
             self.mesi.append(Mese(Numero: mese, Anno: anno))
         }
+        
+        let dateRange = Calendar.current.range(of: .day, in: .year, for: date)!
+        for dayNumber in 1..<dateRange.upperBound {
+            var newDateComponent = DateComponents()
+            newDateComponent.timeZone = gmtTimeZone
+            newDateComponent.year = anno
+            newDateComponent.day = dayNumber
+            self.giorni.append(Calendar.current.date(from: newDateComponent)!)
+        }
+    }
+    
+    func getCurrent(Data data: Date, tipo: TipoCalendario) -> Int? {
+        var components = DateComponents()
+        components = Calendar.current.dateComponents(in: gmtTimeZone!, from: data)
+        
+        if (tipo == .giornaliero) {
+            if let selectedIndex = self.giorni.index(where: {Calendar.current.component(.day, from: $0) == components.day && Calendar.current.component(.month, from: $0) == components.month}) {
+                return selectedIndex
+            } else {
+                return nil
+            }
+        } else if (tipo == .settimanale) {
+            if let selectedIndex = self.settimane.index(where: {$0.numero == components.weekOfYear}) {
+                return selectedIndex
+            } else {
+                return nil
+            }
+        } else if (tipo == .mensile) {
+            if let selectedIndex = self.mesi.index(where: {$0.numero == components.month}) {
+                return selectedIndex
+            } else {
+                return nil
+            }
+        }
+        
+        return nil
+    }
+    
+    func getRequest(indice: Int, tipoCalendario: TipoCalendario) -> JSONIncassiRequest? {
+        var request: JSONIncassiRequest?
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = gmtTimeZone
+        
+        if tipoCalendario == .giornaliero {
+            let data = self.giorni[indice]
+            
+            var toAdd = DateComponents()
+            toAdd.day = -364
+            toAdd.timeZone = gmtTimeZone
+            let dataAP = Calendar.current.date(byAdding: toAdd, to: data)!
+            
+            let dataCorrente = dateFormatter.string(from: data)
+            let dataCorrenteAP = dateFormatter.string(from: dataAP)
+            let dataInizio = dateFormatter.string(from: data)
+            let dataInizioAP = dateFormatter.string(from: dataAP)
+            let dataFine = dateFormatter.string(from: data)
+            let dataFineAP = dateFormatter.string(from: dataAP)
+            
+            request = JSONIncassiRequest(dataCorrente: dataCorrente, dataCorrenteAP: dataCorrenteAP, dataFine: dataFine, dataFineAP: dataFineAP, dataInizio: dataInizio, dataInizioAP: dataInizioAP, draw: 0, functionName: "")
+            
+            return request
+        } else if tipoCalendario == .settimanale {
+            let settimana = self.settimane[indice]
+            
+            let dataCorrente = dateFormatter.string(from: settimana.fine)
+            let dataCorrenteAP = dateFormatter.string(from: settimana.fineAP)
+            let dataInizio = dateFormatter.string(from: settimana.inizio)
+            let dataInizioAP = dateFormatter.string(from: settimana.inizioAP)
+            let dataFine = dateFormatter.string(from: settimana.fine)
+            let dataFineAP = dateFormatter.string(from: settimana.fineAP)
+            
+            request = JSONIncassiRequest(dataCorrente: dataCorrente, dataCorrenteAP: dataCorrenteAP, dataFine: dataFine, dataFineAP: dataFineAP, dataInizio: dataInizio, dataInizioAP: dataInizioAP, draw: 0, functionName: "")
+        }
+        
+        return nil
     }
 }
 
