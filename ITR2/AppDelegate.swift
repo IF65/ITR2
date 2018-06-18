@@ -19,6 +19,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if let json = loadConfigFromDisc() {
             elencoSocieta = json
+            
+            for societa in elencoSocieta {
+                let area = Area()
+                area.codice = 0
+                area.descrizione = "TUTTE LE SEDI"
+                area.societa = societa.key
+                area.sedi = []
+                societa.value.aree.append(area)
+                societa.value.aree.sort(by: {$0.codice <= $1.codice})
+            }
         }
         
         return true

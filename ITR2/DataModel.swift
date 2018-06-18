@@ -10,19 +10,6 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
-let societaSelezionata = "08"
-var elencoSocieta = [String : Societa]()
-var settimane = [Settimana]()
-
-
- //MARK:- Costanti
-// ---------------------------------------------
-let itmServer = "10.11.14.78"
-let itmItrPath = "/itr/itr.php"
-
-let gmtTimeZone = TimeZone(abbreviation: "GMT")
-let offsetWeek = 0
-
 //MARK:- Config
 // ---------------------------------------------
 class Sede: Codable {
@@ -165,10 +152,12 @@ func loadConfigFromDisc() -> [String : Societa]? {
 // ---------------------------------------------
 
 struct JSONIncasso: Decodable {
+    let codiceSocieta: String
+    let codiceCed: String
+    let codice: String
     let clienti: String
     let clientiAP: String
     let clientiOb: String
-    let codice: String
     let giornataClienti: String
     let giornataPassaggi: String
     let giornataVenduto: String
@@ -247,15 +236,34 @@ class Incasso {
     }
 }
 
+struct TotaliIncasso {
+    var totaleVenduto: Double = 0.0
+    var totaleVendutoAP: Double = 0.0
+    var deltaVenduto: Double = 0.0
+    var deltaVendutoP: Double = 0.0
+}
+
 class Incassi {
     var incassi = [Incasso]()
     
     init() {
         self.incassi = []
     }
+    
+    func totaleVenduto() -> TotaliIncasso {
+        var totali = TotaliIncasso()
+        for incasso in self.incassi {
+            totali.totaleVenduto += incasso.venduto
+            totali.totaleVendutoAP += incasso.vendutoAP
+        }
+        totali.deltaVenduto = totali.totaleVenduto - totali.totaleVendutoAP
+        totali.deltaVendutoP = totali.totaleVendutoAP != 0 ? totali.deltaVenduto/totali.totaleVendutoAP : 0
+        
+        return totali
+    }
 }
 
- //MARK:- Periodi
+//MARK:- Periodi
 // ---------------------------------------------
 enum TipoCalendario {
     case giornaliero
@@ -416,6 +424,8 @@ class Periodo {
             let dataFineAP = dateFormatter.string(from: settimana.fineAP)
             
             request = JSONIncassiRequest(dataCorrente: dataCorrente, dataCorrenteAP: dataCorrenteAP, dataFine: dataFine, dataFineAP: dataFineAP, dataInizio: dataInizio, dataInizioAP: dataInizioAP, draw: 0, functionName: "")
+            
+            return request
         }
         
         return nil

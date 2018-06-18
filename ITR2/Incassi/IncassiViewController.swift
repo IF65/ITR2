@@ -9,25 +9,28 @@
 import UIKit
 
 class IncassiViewController: UIViewController {
-    
-    var tipoCalendarioSelezionato: TipoCalendario?
-    var indiceCalendarioSelezionato: Int?
-    
-    var periodo: Periodo?
-    
-    var incassi = Incassi()
-
+   
     @IBOutlet weak var verticalCollectionView: UICollectionView!
     @IBOutlet weak var horizontalCollectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var pannelloTotali: UIView!
+    @IBOutlet weak var totaleVenduto: UILabel!
+    @IBOutlet weak var totaleVendutoAP: UILabel!
+    @IBOutlet weak var deltaVenduto: UILabel!
+    @IBOutlet weak var deltaVendutoP: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         periodo = Periodo(Anno: 2018)
-        tipoCalendarioSelezionato = TipoCalendario.settimanale
+        tipoCalendarioSelezionato = TipoCalendario.giornaliero
         indiceCalendarioSelezionato = periodo?.getCurrent(Data: Date(), tipo: tipoCalendarioSelezionato!)
         horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
+        
+        indiceAreaSelezionata = 1
+        
+        pannelloTotali.layer.borderColor = lightGrey.cgColor
+        pannelloTotali.layer.borderWidth = 1.0
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,7 +38,7 @@ class IncassiViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    private func aggiornamentoIncassi() {
+    func aggiornamentoIncassi() {
         var urlComponents = URLComponents()
         urlComponents.scheme = "http"
         urlComponents.host = itmServer
@@ -66,16 +69,40 @@ class IncassiViewController: UIViewController {
                                 let jsonDecoder = JSONDecoder()
                                 let jsonIncassi =  try jsonDecoder.decode(JSONIncassi.self, from: data)
                                 
-                                self.incassi.incassi.removeAll()
+                                incassi.incassi.removeAll()
                                 for jsonIncasso in jsonIncassi.data {
-                                    self.incassi.incassi.append(Incasso(jsonIncasso: jsonIncasso))
+                                    if jsonIncasso.codiceSocieta == societaSelezionata {
+                                        incassi.incassi.append(Incasso(jsonIncasso: jsonIncasso))
+                                    }
                                 }
+                                
                             } catch {
                                 print("Errore di conversione: \(error)")
                             }
                             
                             DispatchQueue.main.async {
                                 self.tableView.reloadData()
+                                
+                                let formatter = NumberFormatter()
+                                formatter.usesGroupingSeparator = true
+                                formatter.alwaysShowsDecimalSeparator = true
+                                formatter.currencyGroupingSeparator = "."
+                                formatter.currencyDecimalSeparator = ","
+                                formatter.decimalSeparator = ","
+                                formatter.groupingSeparator = "."
+                                formatter.maximumFractionDigits = 2
+                                formatter.minimumFractionDigits = 2
+                                formatter.currencySymbol = ""
+                                
+                                let totali = incassi.totaleVenduto()
+                                
+                                formatter.numberStyle = .currency
+                                self.totaleVenduto.text = formatter.string(for: totali.totaleVenduto)
+                                self.totaleVendutoAP.text = formatter.string(for: totali.totaleVendutoAP)
+                                self.deltaVenduto.text = formatter.string(for: totali.deltaVenduto)
+                                
+                                formatter.numberStyle = .percent
+                                self.deltaVendutoP.text = formatter.string(for: totali.deltaVendutoP)
                             }
                             return
                         }
@@ -98,7 +125,7 @@ class IncassiViewController: UIViewController {
         }
     }
 }
-
+    
 //MARK:- Table View
 extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -111,9 +138,23 @@ extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath)
-        cell.textLabel?.text = String(incassi.incassi[indexPath.row].clienti)
-        cell.detailTextLabel?.text = String(incassi.incassi[indexPath.row].venduto)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "IncassoCell", for: indexPath) as! IncassoCell
+        
+        let formatter = NumberFormatter()
+        formatter.usesGroupingSeparator = true
+        formatter.alwaysShowsDecimalSeparator = true
+        formatter.currencyGroupingSeparator = "."
+        formatter.currencyDecimalSeparator = ","
+        formatter.decimalSeparator = ","
+        formatter.groupingSeparator = "."
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+        formatter.currencySymbol = ""
+        formatter.numberStyle = .currency
+        
+        cell.sede.text = incassi.incassi[indexPath.row].codice
+        cell.venduto.text = formatter.string(for: incassi.incassi[indexPath.row].venduto)
+        cell.vendutoAP.text = formatter.string(for: incassi.incassi[indexPath.row].vendutoAP)
         
         return cell
     }
@@ -159,24 +200,32 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
             
             return cell
         } else {
-            var cellIdentifier = ""
             if tipoCalendarioSelezionato == .giornaliero {
-                cellIdentifier = "giornoCell"
-            } else if tipoCalendarioSelezionato == .settimanale {
-                cellIdentifier = "settimaneCell"
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "giornoCell", for: indexPath) as! giornoCell
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.locale = Locale(identifier: "it_IT")
+                
+                dateFormatter.setLocalizedDateFormatFromTemplate("EEE")
+                cell.giornoSettimana.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
+                dateFormatter.setLocalizedDateFormatFromTemplate("MMMM")
+                cell.mese.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
+                dateFormatter.setLocalizedDateFormatFromTemplate("dd")
+                cell.giorno.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
+                
+                return cell
             }
             
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! giornoCell
-            
-            let selectedDate = Calendar.current.dateComponents([.day,.month], from: periodo!.giorni[indexPath.row])
-            cell.giornoSettimana.text = "\(selectedDate.day!)/\(selectedDate.month!)"
-            return cell
+           return UICollectionViewCell()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        indiceCalendarioSelezionato = indexPath.row
-        
+        if collectionView == horizontalCollectionView {
+            indiceCalendarioSelezionato = indexPath.row
+        } else {
+            indiceAreaSelezionata = indexPath.row
+        }
         aggiornamentoIncassi()
     }
     
@@ -184,7 +233,7 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animateAlongsideTransition(in: nil, animation: nil) {(context) -> Void in
-            let selezioneCorrente = self.periodo!.getCurrent(Data: Date(), tipo: .giornaliero)!
+            let selezioneCorrente = periodo!.getCurrent(Data: Date(), tipo: .giornaliero)!
             self.horizontalCollectionView.scrollToItem(at: IndexPath(item: selezioneCorrente, section: 0), at: .centeredHorizontally, animated: true)
             return
         }
@@ -194,8 +243,8 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
 extension IncassiViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView === verticalCollectionView {
-            return CGSize(width: Int(120), height: Int(60))
-        } else {
+            return CGSize(width: Int(100), height: Int(50))
+        } else {        
             if tipoCalendarioSelezionato == TipoCalendario.giornaliero {
                 return CGSize(width: Int(60), height: Int(60))
             } else if tipoCalendarioSelezionato == TipoCalendario.settimanale {

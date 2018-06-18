@@ -26,18 +26,19 @@ class giornoCell: UICollectionViewCell {
         self.layer.backgroundColor = UIColor.white.cgColor
         
         self.boxInterno.layer.cornerRadius = 4.0
-        self.boxInterno.layer.borderColor = UIColor.lightGray.cgColor
+        self.boxInterno.layer.borderColor = blueSM.cgColor
         self.boxInterno.layer.borderWidth = 0.5
         self.boxInterno.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         self.boxInterno.layer.backgroundColor = UIColor.white.cgColor
         
         self.boxInternoTopBar.layer.cornerRadius = 4.0
         self.boxInternoTopBar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        self.boxInternoTopBar.backgroundColor = blueSM
         
-        /*self.etichettaGiorno.textColor = blueSM
-        self.etichettaMese.textColor = blueSM
+        self.giorno.textColor = blueSM
+        self.mese.textColor = blueSM
         
-        self.etichettaGiornoDellaSettimana.textColor = UIColor.white*/
+        self.giornoSettimana.textColor = UIColor.white
         
     }
 }
