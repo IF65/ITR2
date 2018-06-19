@@ -38,6 +38,42 @@ class Societa: Codable {
     var descrizione: String = ""
     var aree = [Area]()
     var sedi = [Sede]()
+    
+    func getSede(CodiceInterno codiceInterno:String) -> Sede? {
+        for sede in self.sedi {
+            if sede.codiceInterno == codiceInterno {
+                return sede
+            }
+        }
+        return nil
+    }
+    
+    func getSede(Codice codice:String) -> Sede? {
+        for sede in self.sedi {
+            if sede.codice == codice {
+                return sede
+            }
+        }
+        return nil
+    }
+    
+    func getArea(Codice codice: Int) -> Area? {
+        for area in self.aree {
+            if area.codice == codice {
+                return area
+            }
+        }
+        return nil
+    }
+    
+    func getArea(Descrizione descrizione:String) -> Area? {
+        for area in self.aree {
+            if area.descrizione == descrizione {
+                return area
+            }
+        }
+        return nil
+    }
 }
 
 func updateConfigData() -> Bool {
@@ -197,6 +233,7 @@ class Incasso {
     var clientiAP: Int = 0
     var clientiOb: Int = 0
     var codice: String = ""
+    var codiceInterno: String = ""
     var giornataClienti: Int = 0
     var giornataPassaggi: Int = 0
     var giornataVenduto: Double = 0.0
@@ -217,7 +254,8 @@ class Incasso {
         self.clienti = Int(jsonIncasso.clienti)!
         self.clientiAP = Int(jsonIncasso.clientiAP)!
         self.clientiOb = Int(jsonIncasso.clientiOb)!
-        self.codice = jsonIncasso.codice
+        self.codice = jsonIncasso.codiceCed
+        self.codiceInterno = jsonIncasso.codice
         self.giornataClienti = Int(jsonIncasso.giornataClienti)!
         self.giornataPassaggi = Int(jsonIncasso.giornataPassaggi)!
         self.giornataVenduto = Double(jsonIncasso.giornataVenduto)!
@@ -259,11 +297,14 @@ class Incassi {
         return nil
     }
     
-    func totaleVenduto() -> TotaliIncasso {
+    func totaleVenduto(_ codiciSede:[String]) -> TotaliIncasso {
+        
         var totali = TotaliIncasso()
         for incasso in self.incassi {
-            totali.totaleVenduto += incasso.venduto
-            totali.totaleVendutoAP += incasso.vendutoAP
+            if let _ = codiciSede.first(where: {$0 == incasso.codice}) {
+                totali.totaleVenduto += incasso.venduto
+                totali.totaleVendutoAP += incasso.vendutoAP
+            }
         }
         totali.deltaVenduto = totali.totaleVenduto - totali.totaleVendutoAP
         totali.deltaVendutoP = totali.totaleVendutoAP != 0 ? totali.deltaVenduto/totali.totaleVendutoAP : 0

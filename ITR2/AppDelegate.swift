@@ -17,18 +17,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        // se non c'è nulla aggiorno e carico
         if let json = loadConfigFromDisc() {
             elencoSocieta = json
-            
-            for societa in elencoSocieta {
-                let area = Area()
-                area.codice = 0
-                area.descrizione = "TUTTE LE SEDI"
-                area.societa = societa.key
-                area.sedi = []
-                societa.value.aree.append(area)
-                societa.value.aree.sort(by: {$0.codice <= $1.codice})
+        } else if updateConfigData() {
+            if let json = loadConfigFromDisc() {
+                elencoSocieta = json
             }
+        }
+        
+        // se il file esiste ma è vuoto aggiorno e carico
+        if elencoSocieta.count == 0 {
+            if updateConfigData() {
+                if let json = loadConfigFromDisc() {
+                    elencoSocieta = json
+                }
+            }
+        }
+        
+        for societa in elencoSocieta {
+            let area = Area()
+            area.codice = -9999
+            area.descrizione = "TUTTE LE SEDI"
+            area.societa = societa.key
+            for sede in societa.value.sedi {
+                area.sedi.append(sede.codice)
+            }
+            societa.value.aree.append(area)
+            societa.value.aree.sort(by: {$0.codice <= $1.codice})
         }
         
         return true

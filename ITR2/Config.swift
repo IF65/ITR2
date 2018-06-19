@@ -22,6 +22,8 @@ var indiceAreaSelezionata: Int?
 var periodo: Periodo?
 var incassi = Incassi()
 
+var defaultColor: UIColor?
+
 // MARK:- Costanti
 // ---------------------------------------------
 public let itmServer = "10.11.14.78"

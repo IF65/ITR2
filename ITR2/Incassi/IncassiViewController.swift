@@ -27,7 +27,9 @@ class IncassiViewController: UIViewController {
         indiceCalendarioSelezionato = periodo?.getCurrent(Data: Date(), tipo: tipoCalendarioSelezionato!)
         horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
         
-        indiceAreaSelezionata = 4
+        indiceAreaSelezionata = 2
+        
+        defaultColor = blueSM
         
         var cellNib = UINib(nibName: "MainTableCell", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "MainTableCell")
@@ -107,7 +109,7 @@ class IncassiViewController: UIViewController {
                                 formatter.minimumFractionDigits = 2
                                 formatter.currencySymbol = ""
                                 
-                                let totali = incassi.totaleVenduto()
+                                let totali = incassi.totaleVenduto((elencoSocieta[societaSelezionata]?.aree[indiceAreaSelezionata!].sedi)!)
                                 
                                 let delta = totali.totaleVenduto - totali.totaleVendutoAP
                                 let deltaP = totali.totaleVendutoAP != 0 ? delta/totali.totaleVendutoAP : 0
@@ -179,8 +181,11 @@ extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
                 let delta = incassi.incassi[indice].venduto - incassi.incassi[indice].vendutoAP
                 let deltaP = incassi.incassi[indice].vendutoAP != 0 ? delta/incassi.incassi[indice].vendutoAP : 0
                 
-                cell.sede.text = incassi.incassi[indice].codice
-                cell.descrizione.text = "Sant'Eufemia"
+                cell.sede.text = incassi.incassi[indice].codiceInterno
+                cell.descrizione.text = "Sede Sconosciuta"
+                if let sede = elencoSocieta[societaSelezionata]?.getSede(Codice: incassi.incassi[indice].codice) {
+                    cell.descrizione.text = sede.descrizione
+                }
                 cell.totale.text = formatter.string(for: incassi.incassi[indice].venduto)
                 
                 formatter.numberStyle = .percent
@@ -248,7 +253,7 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
                 cell.mese.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
                 dateFormatter.setLocalizedDateFormatFromTemplate("dd")
                 cell.giorno.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
-                
+                                
                 return cell
             }
             
