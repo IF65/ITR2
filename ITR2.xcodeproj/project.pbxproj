@@ -18,6 +18,11 @@
 		C9BD9F4620D840FB00847C46 /* VerticalCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4520D840FB00847C46 /* VerticalCollectionView.swift */; };
 		C9BD9F4820D841F400847C46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4720D841F400847C46 /* Config.swift */; };
 		C9BD9F4A20D8454C00847C46 /* TotalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4920D8454C00847C46 /* TotalView.swift */; };
+		C9C060E920D92E09006D97B2 /* MainTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C060E720D92E09006D97B2 /* MainTableCell.swift */; };
+		C9C060EA20D92E09006D97B2 /* MainTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9C060E820D92E09006D97B2 /* MainTableCell.xib */; };
+		C9C060EF20D92E91006D97B2 /* NothingFoundCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9C060EC20D92E91006D97B2 /* NothingFoundCell.xib */; };
+		C9C060F020D92E91006D97B2 /* LoadingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9C060ED20D92E91006D97B2 /* LoadingCell.xib */; };
+		C9C060F120D92E91006D97B2 /* NothingFoundCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C060EE20D92E91006D97B2 /* NothingFoundCell.swift */; };
 		C9FCAD4320CD2D8C008883FF /* areaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4220CD2D8C008883FF /* areaCell.swift */; };
 		C9FCAD4620CD5185008883FF /* giornoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4520CD5185008883FF /* giornoCell.swift */; };
 		C9FCAD4920CD62FC008883FF /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FCAD4820CD62FC008883FF /* DataModel.swift */; };
@@ -39,6 +44,11 @@
 		C9BD9F4520D840FB00847C46 /* VerticalCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalCollectionView.swift; sourceTree = "<group>"; };
 		C9BD9F4720D841F400847C46 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		C9BD9F4920D8454C00847C46 /* TotalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalView.swift; sourceTree = "<group>"; };
+		C9C060E720D92E09006D97B2 /* MainTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableCell.swift; sourceTree = "<group>"; };
+		C9C060E820D92E09006D97B2 /* MainTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainTableCell.xib; sourceTree = "<group>"; };
+		C9C060EC20D92E91006D97B2 /* NothingFoundCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NothingFoundCell.xib; sourceTree = "<group>"; };
+		C9C060ED20D92E91006D97B2 /* LoadingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingCell.xib; sourceTree = "<group>"; };
+		C9C060EE20D92E91006D97B2 /* NothingFoundCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingFoundCell.swift; sourceTree = "<group>"; };
 		C9FCAD4220CD2D8C008883FF /* areaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = areaCell.swift; sourceTree = "<group>"; };
 		C9FCAD4520CD5185008883FF /* giornoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = giornoCell.swift; sourceTree = "<group>"; };
 		C9FCAD4820CD62FC008883FF /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
@@ -118,12 +128,25 @@
 			path = Incassi;
 			sourceTree = "<group>";
 		};
+		C9C060EB20D92E91006D97B2 /* CelleGeneriche */ = {
+			isa = PBXGroup;
+			children = (
+				C9C060EC20D92E91006D97B2 /* NothingFoundCell.xib */,
+				C9C060ED20D92E91006D97B2 /* LoadingCell.xib */,
+				C9C060EE20D92E91006D97B2 /* NothingFoundCell.swift */,
+			);
+			path = CelleGeneriche;
+			sourceTree = "<group>";
+		};
 		C9FCAD4420CD2DAB008883FF /* Celle */ = {
 			isa = PBXGroup;
 			children = (
+				C9C060EB20D92E91006D97B2 /* CelleGeneriche */,
 				C9FCAD4520CD5185008883FF /* giornoCell.swift */,
 				C9FCAD4220CD2D8C008883FF /* areaCell.swift */,
 				C948E67C20D8604300FB815B /* IncassoCell.swift */,
+				C9C060E720D92E09006D97B2 /* MainTableCell.swift */,
+				C9C060E820D92E09006D97B2 /* MainTableCell.xib */,
 			);
 			name = Celle;
 			path = "New Group";
@@ -191,7 +214,10 @@
 			files = (
 				C9385D7120CD166300B3A18C /* LaunchScreen.storyboard in Resources */,
 				C9385D6E20CD166300B3A18C /* Assets.xcassets in Resources */,
+				C9C060F020D92E91006D97B2 /* LoadingCell.xib in Resources */,
 				C9385D6C20CD166300B3A18C /* Main.storyboard in Resources */,
+				C9C060EF20D92E91006D97B2 /* NothingFoundCell.xib in Resources */,
+				C9C060EA20D92E09006D97B2 /* MainTableCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,9 +273,11 @@
 				C9FCAD4920CD62FC008883FF /* DataModel.swift in Sources */,
 				C9FCAD4320CD2D8C008883FF /* areaCell.swift in Sources */,
 				C9BD9F4420D8408600847C46 /* HorizontalCollectionView.swift in Sources */,
+				C9C060E920D92E09006D97B2 /* MainTableCell.swift in Sources */,
 				C9385D6920CD166300B3A18C /* IncassiViewController.swift in Sources */,
 				C9FCAD4620CD5185008883FF /* giornoCell.swift in Sources */,
 				C9BD9F4820D841F400847C46 /* Config.swift in Sources */,
+				C9C060F120D92E91006D97B2 /* NothingFoundCell.swift in Sources */,
 				C9BD9F4620D840FB00847C46 /* VerticalCollectionView.swift in Sources */,
 				C9385D6720CD166300B3A18C /* AppDelegate.swift in Sources */,
 				C9BD9F4A20D8454C00847C46 /* TotalView.swift in Sources */,

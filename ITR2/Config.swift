@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-let societaSelezionata = "08"
+var societaSelezionata = "08"
 var elencoSocieta = [String : Societa]()
 //var settimane = [Settimana]()
 

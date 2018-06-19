@@ -14,10 +14,10 @@ class IncassiViewController: UIViewController {
     @IBOutlet weak var horizontalCollectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var pannelloTotali: UIView!
-    @IBOutlet weak var totaleVenduto: UILabel!
-    @IBOutlet weak var totaleVendutoAP: UILabel!
-    @IBOutlet weak var deltaVenduto: UILabel!
-    @IBOutlet weak var deltaVendutoP: UILabel!
+    @IBOutlet weak var area: UILabel!
+    @IBOutlet weak var descrizione: UILabel!
+    @IBOutlet weak var totale: UILabel!
+    @IBOutlet weak var deltaP: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,9 +27,22 @@ class IncassiViewController: UIViewController {
         indiceCalendarioSelezionato = periodo?.getCurrent(Data: Date(), tipo: tipoCalendarioSelezionato!)
         horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
         
-        indiceAreaSelezionata = 1
+        indiceAreaSelezionata = 4
+        
+        var cellNib = UINib(nibName: "MainTableCell", bundle: nil)
+        tableView.register(cellNib, forCellReuseIdentifier: "MainTableCell")
+        cellNib = UINib(nibName: "LoadingCell", bundle: nil)
+        tableView.register(cellNib, forCellReuseIdentifier: "LoadingCell")
+        cellNib = UINib(nibName: "NothingFoundCell", bundle: nil)
+        tableView.register(cellNib, forCellReuseIdentifier: "NothingFoundCell")
+        
+        self.area.textColor = blueSM
+        self.descrizione.textColor = blueSM
+        self.totale.textColor = blueSM
+        self.deltaP.textColor = blueSM
         
         pannelloTotali.layer.borderColor = lightGrey.cgColor
+        pannelloTotali.layer.backgroundColor = lightGrey.cgColor
         pannelloTotali.layer.borderWidth = 1.0
     }
 
@@ -96,13 +109,16 @@ class IncassiViewController: UIViewController {
                                 
                                 let totali = incassi.totaleVenduto()
                                 
+                                let delta = totali.totaleVenduto - totali.totaleVendutoAP
+                                let deltaP = totali.totaleVendutoAP != 0 ? delta/totali.totaleVendutoAP : 0
+                                
                                 formatter.numberStyle = .currency
-                                self.totaleVenduto.text = formatter.string(for: totali.totaleVenduto)
-                                self.totaleVendutoAP.text = formatter.string(for: totali.totaleVendutoAP)
-                                self.deltaVenduto.text = formatter.string(for: totali.deltaVenduto)
+                                self.totale.text = formatter.string(for: totali.totaleVenduto)
+                                self.area.text = "TUTTE LE AREE"
+                                self.descrizione.text = "Tipo report: vendite"
                                 
                                 formatter.numberStyle = .percent
-                                self.deltaVendutoP.text = formatter.string(for: totali.deltaVendutoP)
+                                self.deltaP.text = formatter.string(for: deltaP)
                             }
                             return
                         }
@@ -133,12 +149,17 @@ extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return incassi.incassi.count
+        if let societa = elencoSocieta[societaSelezionata] {
+            if let indiceAreaSelezionata = indiceAreaSelezionata {
+                return societa.aree[indiceAreaSelezionata].sedi.count
+            }
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "IncassoCell", for: indexPath) as! IncassoCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableCell", for: indexPath) as! MainTableCell
         
         let formatter = NumberFormatter()
         formatter.usesGroupingSeparator = true
@@ -152,10 +173,25 @@ extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
         formatter.currencySymbol = ""
         formatter.numberStyle = .currency
         
-        cell.sede.text = incassi.incassi[indexPath.row].codice
-        cell.venduto.text = formatter.string(for: incassi.incassi[indexPath.row].venduto)
-        cell.vendutoAP.text = formatter.string(for: incassi.incassi[indexPath.row].vendutoAP)
-        
+        if incassi.incassi.count > 0 {
+            if let indice = incassi.indiceSede(incassi.incassi[indexPath.row].codice) {
+                
+                let delta = incassi.incassi[indice].venduto - incassi.incassi[indice].vendutoAP
+                let deltaP = incassi.incassi[indice].vendutoAP != 0 ? delta/incassi.incassi[indice].vendutoAP : 0
+                
+                cell.sede.text = incassi.incassi[indice].codice
+                cell.descrizione.text = "Sant'Eufemia"
+                cell.totale.text = formatter.string(for: incassi.incassi[indice].venduto)
+                
+                formatter.numberStyle = .percent
+                cell.deltaP.text = formatter.string(for: deltaP)
+                
+                cell.deltaP.textColor = blueSM
+                if delta < 0 {
+                    cell.deltaP.textColor = UIColor.red
+                }
+            }
+        }
         return cell
     }
 }

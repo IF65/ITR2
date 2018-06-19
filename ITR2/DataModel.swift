@@ -250,6 +250,15 @@ class Incassi {
         self.incassi = []
     }
     
+    func indiceSede(_ sede: String) -> Int? {
+        for indice in 0..<self.incassi.count {
+            if sede == incassi[indice].codice {
+                return indice
+            }
+        }
+        return nil
+    }
+    
     func totaleVenduto() -> TotaliIncasso {
         var totali = TotaliIncasso()
         for incasso in self.incassi {
