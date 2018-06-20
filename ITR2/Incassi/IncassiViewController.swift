@@ -29,8 +29,6 @@ class IncassiViewController: UIViewController {
         
         indiceAreaSelezionata = 2
         
-        defaultColor = blueSM
-        
         var cellNib = UINib(nibName: "MainTableCell", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "MainTableCell")
         cellNib = UINib(nibName: "LoadingCell", bundle: nil)
@@ -253,7 +251,13 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
                 cell.mese.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
                 dateFormatter.setLocalizedDateFormatFromTemplate("dd")
                 cell.giorno.text = dateFormatter.string(from: periodo!.giorni[indexPath.row])
-                                
+                
+                /*if indexPath.row == indiceCalendarioSelezionato {
+                    cell.boxInternoTopBar.backgroundColor = purpleSM
+                } else {
+                    cell.boxInternoTopBar.layer.backgroundColor = blueSM.cgColor
+                }*/
+                
                 return cell
             }
             

@@ -18,23 +18,34 @@ class giornoCell: UICollectionViewCell {
     @IBOutlet weak var giorno: UILabel!
     @IBOutlet weak var mese: UILabel!
     
+    override var isSelected: Bool {
+        didSet {
+            if isSelected { // Selected cell
+                self.boxInternoTopBar.backgroundColor = UIColor.red
+            } else { // Normal cell
+                self.boxInternoTopBar.backgroundColor = blueSM
+            }
+        }
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
         self.layer.backgroundColor = UIColor.white.cgColor
         
         self.boxInterno.layer.cornerRadius = 4.0
-        self.boxInterno.layer.borderColor = defaultColor!.cgColor
+        self.boxInterno.layer.borderColor = blueSM.cgColor
         self.boxInterno.layer.borderWidth = 0.5
         self.boxInterno.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         self.boxInterno.layer.backgroundColor = UIColor.white.cgColor
         
         self.boxInternoTopBar.layer.cornerRadius = 4.0
         self.boxInternoTopBar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        self.boxInternoTopBar.backgroundColor = defaultColor!
+        self.boxInternoTopBar.backgroundColor = blueSM
         
-        self.giorno.textColor = defaultColor!
-        self.mese.textColor = defaultColor!
+        
+        self.giorno.textColor = blueSM
+        self.mese.textColor = blueSM
         
         self.giornoSettimana.textColor = UIColor.white
         
