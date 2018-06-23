@@ -14,6 +14,7 @@
 		C9385D6E20CD166300B3A18C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9385D6D20CD166300B3A18C /* Assets.xcassets */; };
 		C9385D7120CD166300B3A18C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9385D6F20CD166300B3A18C /* LaunchScreen.storyboard */; };
 		C948E67D20D8604300FB815B /* IncassoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C948E67C20D8604300FB815B /* IncassoCell.swift */; };
+		C99334EF20DC9B7200A1E7A5 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99334EE20DC9B7200A1E7A5 /* ScannerViewController.swift */; };
 		C9BD9F4420D8408600847C46 /* HorizontalCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4320D8408600847C46 /* HorizontalCollectionView.swift */; };
 		C9BD9F4620D840FB00847C46 /* VerticalCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4520D840FB00847C46 /* VerticalCollectionView.swift */; };
 		C9BD9F4820D841F400847C46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BD9F4720D841F400847C46 /* Config.swift */; };
@@ -40,6 +41,7 @@
 		C9385D7020CD166300B3A18C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9385D7220CD166300B3A18C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C948E67C20D8604300FB815B /* IncassoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncassoCell.swift; sourceTree = "<group>"; };
+		C99334EE20DC9B7200A1E7A5 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		C9BD9F4320D8408600847C46 /* HorizontalCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCollectionView.swift; sourceTree = "<group>"; };
 		C9BD9F4520D840FB00847C46 /* VerticalCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalCollectionView.swift; sourceTree = "<group>"; };
 		C9BD9F4720D841F400847C46 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				C9BD9F4720D841F400847C46 /* Config.swift */,
 				C9385D6D20CD166300B3A18C /* Assets.xcassets */,
 				C9385D6A20CD166300B3A18C /* Main.storyboard */,
+				C99334EE20DC9B7200A1E7A5 /* ScannerViewController.swift */,
 				C9385D6F20CD166300B3A18C /* LaunchScreen.storyboard */,
 				C9385D7220CD166300B3A18C /* Info.plist */,
 			);
@@ -279,6 +282,7 @@
 				C9BD9F4820D841F400847C46 /* Config.swift in Sources */,
 				C9C060F120D92E91006D97B2 /* NothingFoundCell.swift in Sources */,
 				C9BD9F4620D840FB00847C46 /* VerticalCollectionView.swift in Sources */,
+				C99334EF20DC9B7200A1E7A5 /* ScannerViewController.swift in Sources */,
 				C9385D6720CD166300B3A18C /* AppDelegate.swift in Sources */,
 				C9BD9F4A20D8454C00847C46 /* TotalView.swift in Sources */,
 			);

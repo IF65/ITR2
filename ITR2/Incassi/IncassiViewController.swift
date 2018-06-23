@@ -19,15 +19,25 @@ class IncassiViewController: UIViewController {
     @IBOutlet weak var totale: UILabel!
     @IBOutlet weak var deltaP: UILabel!
     
+    var caricamentoInCorso = false
+    override func viewDidAppear(_ animated: Bool) {
+        verticalCollectionView.selectItem(at: IndexPath(row: indiceAreaSelezionata!, section: 0), animated: true, scrollPosition: UICollectionViewScrollPosition(rawValue: UICollectionViewScrollPosition.RawValue(indiceAreaSelezionata!)))
+        
+        horizontalCollectionView.selectItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), animated: false, scrollPosition:UICollectionViewScrollPosition(rawValue: 0))
+        horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         periodo = Periodo(Anno: 2018)
+        
         tipoCalendarioSelezionato = TipoCalendario.giornaliero
         indiceCalendarioSelezionato = periodo?.getCurrent(Data: Date(), tipo: tipoCalendarioSelezionato!)
-        horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
+        //horizontalCollectionView.scrollToItem(at: IndexPath(row: indiceCalendarioSelezionato!, section: 0), at: .centeredHorizontally, animated: true)
         
-        indiceAreaSelezionata = 2
+        indiceAreaSelezionata = 0
+        
         
         var cellNib = UINib(nibName: "MainTableCell", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "MainTableCell")
@@ -52,6 +62,9 @@ class IncassiViewController: UIViewController {
     }
     
     func aggiornamentoIncassi() {
+        caricamentoInCorso = true
+        self.tableView.reloadData()
+        
         var urlComponents = URLComponents()
         urlComponents.scheme = "http"
         urlComponents.host = itmServer
@@ -93,7 +106,8 @@ class IncassiViewController: UIViewController {
                                 print("Errore di conversione: \(error)")
                             }
                             
-                            DispatchQueue.main.async {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                self.caricamentoInCorso = false
                                 self.tableView.reloadData()
                                 
                                 let formatter = NumberFormatter()
@@ -114,7 +128,7 @@ class IncassiViewController: UIViewController {
                                 
                                 formatter.numberStyle = .currency
                                 self.totale.text = formatter.string(for: totali.totaleVenduto)
-                                self.area.text = "TUTTE LE AREE"
+                                self.area.text = elencoSocieta[societaSelezionata]?.aree[indiceAreaSelezionata!].descrizione
                                 self.descrizione.text = "Tipo report: vendite"
                                 
                                 formatter.numberStyle = .percent
@@ -149,53 +163,65 @@ extension IncassiViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let societa = elencoSocieta[societaSelezionata] {
-            if let indiceAreaSelezionata = indiceAreaSelezionata {
-                return societa.aree[indiceAreaSelezionata].sedi.count
+        if caricamentoInCorso {
+            return 1
+        } else {
+            if let societa = elencoSocieta[societaSelezionata] {
+                if let indiceAreaSelezionata = indiceAreaSelezionata {
+                    return societa.aree[indiceAreaSelezionata].sedi.count
+                }
             }
         }
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableCell", for: indexPath) as! MainTableCell
-        
-        let formatter = NumberFormatter()
-        formatter.usesGroupingSeparator = true
-        formatter.alwaysShowsDecimalSeparator = true
-        formatter.currencyGroupingSeparator = "."
-        formatter.currencyDecimalSeparator = ","
-        formatter.decimalSeparator = ","
-        formatter.groupingSeparator = "."
-        formatter.maximumFractionDigits = 2
-        formatter.minimumFractionDigits = 2
-        formatter.currencySymbol = ""
-        formatter.numberStyle = .currency
-        
-        if incassi.incassi.count > 0 {
-            if let indice = incassi.indiceSede(incassi.incassi[indexPath.row].codice) {
-                
-                let delta = incassi.incassi[indice].venduto - incassi.incassi[indice].vendutoAP
-                let deltaP = incassi.incassi[indice].vendutoAP != 0 ? delta/incassi.incassi[indice].vendutoAP : 0
-                
-                cell.sede.text = incassi.incassi[indice].codiceInterno
-                cell.descrizione.text = "Sede Sconosciuta"
-                if let sede = elencoSocieta[societaSelezionata]?.getSede(Codice: incassi.incassi[indice].codice) {
-                    cell.descrizione.text = sede.descrizione
-                }
-                cell.totale.text = formatter.string(for: incassi.incassi[indice].venduto)
-                
-                formatter.numberStyle = .percent
-                cell.deltaP.text = formatter.string(for: deltaP)
-                
-                cell.deltaP.textColor = blueSM
-                if delta < 0 {
-                    cell.deltaP.textColor = UIColor.red
+        if caricamentoInCorso {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "LoadingCell", for: indexPath)
+            
+            let spinner = cell.viewWithTag(100) as! UIActivityIndicatorView
+            spinner.startAnimating()
+            
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableCell", for: indexPath) as! MainTableCell
+            
+            let formatter = NumberFormatter()
+            formatter.usesGroupingSeparator = true
+            formatter.alwaysShowsDecimalSeparator = true
+            formatter.currencyGroupingSeparator = "."
+            formatter.currencyDecimalSeparator = ","
+            formatter.decimalSeparator = ","
+            formatter.groupingSeparator = "."
+            formatter.maximumFractionDigits = 2
+            formatter.minimumFractionDigits = 2
+            formatter.currencySymbol = ""
+            formatter.numberStyle = .currency
+            
+            if incassi.incassi.count > 0 {
+                if let indice = incassi.indiceSede(incassi.incassi[indexPath.row].codice) {
+                    
+                    let delta = incassi.incassi[indice].venduto - incassi.incassi[indice].vendutoAP
+                    let deltaP = incassi.incassi[indice].vendutoAP != 0 ? delta/incassi.incassi[indice].vendutoAP : 0
+                    
+                    cell.sede.text = incassi.incassi[indice].codiceInterno
+                    cell.descrizione.text = "Sede Sconosciuta"
+                    if let sede = elencoSocieta[societaSelezionata]?.getSede(Codice: incassi.incassi[indice].codice) {
+                        cell.descrizione.text = sede.descrizione
+                    }
+                    cell.totale.text = formatter.string(for: incassi.incassi[indice].venduto)
+                    
+                    formatter.numberStyle = .percent
+                    cell.deltaP.text = formatter.string(for: deltaP)
+                    
+                    cell.deltaP.textColor = blueSM
+                    if delta < 0 {
+                        cell.deltaP.textColor = UIColor.red
+                    }
                 }
             }
+            return cell
         }
-        return cell
     }
 }
 
@@ -270,6 +296,7 @@ extension IncassiViewController: UICollectionViewDataSource, UICollectionViewDel
             indiceCalendarioSelezionato = indexPath.row
         } else {
             indiceAreaSelezionata = indexPath.row
+            self.area.text = elencoSocieta[societaSelezionata]?.aree[indiceAreaSelezionata!].descrizione
         }
         aggiornamentoIncassi()
     }
